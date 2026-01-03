@@ -1,0 +1,14 @@
+.gradle/
+build/
+/local.properties
+/.idea/
+*.iml
+.gradle/
+.gradle/**
+**/build/
+.gradle
+.gradle/**
+.gradle-cache/
+/.cxx/
+.gradle-test-kit/
+android/local.properties
