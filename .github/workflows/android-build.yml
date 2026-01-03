@@ -20,10 +20,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Generate Gradle wrapper (Docker)
-        run: |
-          docker run --rm -v "${{ github.workspace }}":/home/gradle/project -w /home/gradle/project gradle:8.4.1-jdk17 gradle wrapper
-
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:
