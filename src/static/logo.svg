@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <rect rx="36" width="256" height="256" fill="#0b1220"/>
+
+  <!-- Headphone + speech bubble -->
+  <g transform="translate(48,48)">
+    <path d="M64 0c35.346 0 64 28.654 64 64v32a12 12 0 0 1-12 12h-8v-56c0-13.255-10.745-24-24-24H44C30.745 28 20 38.745 20 52v56h-8a12 12 0 0 1-12-12V64C0 28.654 28.654 0 64 0z" fill="url(#g)"/>
+    <path d="M20 124c0 7.732 6.268 14 14 14h72l18 18 0-32h8c7.732 0 14-6.268 14-14v-26.5C146 106.91 108.39 142 64 142 28.654 142 0 113.346 0 78v46z" fill="#07102a" opacity="0.9"/>
+  </g>
+
+  <!-- Text -->
+  <text x="22" y="224" font-family="Segoe UI, Arial, Helvetica" font-size="28" fill="white">Anime AI</text>
+  <text x="22" y="246" font-family="Segoe UI, Arial, Helvetica" font-size="12" fill="#9fb0cf">Озвучка</text>
+</svg>

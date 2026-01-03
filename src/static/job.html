@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Задача — Anime AI Озвучка</title>
+  <style>
+    body{font-family:Inter,system-ui,Segoe UI,Arial;margin:0;padding:12px;background:#0f172a;color:#e6eef8}
+    .card{background:#0b1220;padding:16px;border-radius:12px}
+    .speaker{display:flex;justify-content:space-between;padding:8px;border-radius:8px;background:#071426;margin-bottom:8px}
+    select{background:#071426;color:#e6eef8;border:1px solid #223;padding:6px;border-radius:8px}
+    button{background:#7c3aed;color:white;padding:10px 12px;border-radius:8px;border:0}
+    .small{font-size:13px;color:#9fb0cf}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Управление голосами по спикерам</h2>
+    <div class="small">Введите job_id ниже и нажмите Load</div>
+    <input type="text" id="job_id" placeholder="job id" style="width:100%;padding:8px;margin:8px 0;border-radius:8px;border:1px solid #223;background:#071426;color:#e6eef8" />
+    <div style="display:flex;gap:8px"><button id="load">Load</button><button id="apply">Apply & Synthesize</button></div>
+
+    <div id="speakers" style="margin-top:12px"></div>
+    <div id="status" class="small" style="margin-top:8px"></div>
+  </div>
+
+  <script>
+    document.getElementById('load').addEventListener('click', async ()=>{
+      const id = document.getElementById('job_id').value.trim()
+      if(!id) return alert('Введите job_id')
+      const resp = await fetch(`/api/job/${id}/speakers`)
+      if(!resp.ok) return alert('Ошибка: ' + resp.status)
+      const json = await resp.json()
+      const speakers = document.getElementById('speakers')
+      speakers.innerHTML = ''
+      for(const k of Object.keys(json)){
+        const info = json[k]
+        const div = document.createElement('div')
+        div.className = 'speaker'
+        div.innerHTML = `<div><strong>${k}</strong><div class='small'>suggested: ${info.suggested_gender}</div></div>`
+        const sel = document.createElement('select')
+        sel.innerHTML = `<option value='auto'>auto</option><option value='male'>male</option><option value='female'>female</option>`
+        sel.value = info.assigned || 'auto'
+        sel.dataset.spk = k
+        div.appendChild(sel)
+        speakers.appendChild(div)
+      }
+
+      // load notifications
+      const nresp = await fetch(`/api/job/${id}/notifications`)
+      if(nresp.ok){
+        const nots = await nresp.json()
+        const status = document.getElementById('status')
+        status.innerHTML = nots.map(n => `${n.time} - ${n.level}: ${n.message}`).join('\n')
+      }
+    })
+
+    document.getElementById('apply').addEventListener('click', async ()=>{
+      const id = document.getElementById('job_id').value.trim()
+      if(!id) return alert('Введите job_id')
+      const selects = document.querySelectorAll('select')
+      const mapping = {}
+      selects.forEach(s=>{mapping[s.dataset.spk] = s.value})
+      const resp = await fetch(`/api/job/${id}/assign_voices`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(mapping)})
+      const j = await resp.json()
+      if(resp.ok) document.getElementById('status').innerText = 'Queued for synthesis'
+      else document.getElementById('status').innerText = 'Error: ' + JSON.stringify(j)
+    })
+
+    // Poll for notifications periodically
+    setInterval(async ()=>{
+      const id = document.getElementById('job_id').value.trim()
+      if(!id) return
+      const nresp = await fetch(`/api/job/${id}/notifications`)
+      if(nresp.ok){
+        const nots = await nresp.json()
+        const status = document.getElementById('status')
+        status.innerText = nots.map(n => `${n.time} - ${n.level}: ${n.message}`).join('\n')
+      }
+    }, 5000)
+  </script>
+</body>
+</html>
