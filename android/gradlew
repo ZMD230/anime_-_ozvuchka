@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+# Placeholder gradle wrapper script for CI builds in the workspace.
+# In CI we'll use the Gradle wrapper downloaded by Gradle or use the system gradle.
+
+echo "This is a placeholder gradlew. In CI, replace with the real Gradle wrapper or install Gradle."

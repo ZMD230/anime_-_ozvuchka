@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Anime AI Озвучка</title>
+  <style>
+    body{font-family:Inter,system-ui,Segoe UI,Arial;margin:0;padding:0;background:#0f172a;color:#e6eef8}
+    .container{max-width:760px;margin:24px auto;padding:20px;background:#0b1220;border-radius:12px}
+    header{display:flex;gap:12px;align-items:center}
+    header img{width:56px;height:56px}
+    h1{margin:0;font-size:20px}
+    form{margin-top:16px;display:grid;gap:12px}
+    input[type=file],select,input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #223}
+    button{background:#7c3aed;color:white;padding:12px 16px;border-radius:8px;border:0}
+    .small{font-size:13px;color:#9fb0cf}
+    footer{margin-top:18px;font-size:12px;color:#8a9bb4}
+    @media (max-width:420px){.container{margin:12px;padding:14px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="/static/logo.svg" alt="logo" />
+      <div>
+        <h1>Anime AI Озвучка</h1>
+        <div class="small">Автоматическая многоголосная озвучка видео на 120+ языков</div>
+      </div>
+    </header>
+
+    <form id="uploadForm">
+      <label>Выберите видео</label>
+      <input type="file" id="file" name="file" accept="video/*" required />
+
+      <label>Язык озвучки</label>
+      <input type="text" id="target_language" name="target_language" placeholder="ru, en, ja" value="ru" />
+
+      <label>Переводить оригинальную речь?</label>
+      <select id="translate" name="translate">
+        <option value="true" selected>Да</option>
+        <option value="false">Нет</option>
+      </select>
+
+      <label>Пол голоса (подсказка)</label>
+      <select id="voice_gender" name="voice_gender">
+        <option value="auto" selected>Авто</option>
+        <option value="male">Мужской</option>
+        <option value="female">Женский</option>
+      </select>
+
+      <label>Добавить логотип (опционально)</label>
+      <input type="file" id="logo" name="logo" accept="image/*" />
+
+      <label>Позиция логотипа</label>
+      <select id="logo_position" name="logo_position">
+        <option value="bottom-left" selected>Нижний левый</option>
+        <option value="bottom-right">Нижний правый</option>
+        <option value="top-left">Верхний левый</option>
+        <option value="top-right">Верхний правый</option>
+        <option value="center">По центру</option>
+      </select>
+
+      <button type="submit">Загрузить и озвучить</button>
+    </form>
+
+    <div id="result" class="small" style="margin-top:14px"></div>
+
+    <footer>© Anime AI Озвучка</footer>
+  </div>
+
+  <script>
+    const form = document.getElementById('uploadForm')
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault()
+      const f = document.getElementById('file').files[0]
+      if(!f) return alert('Выберите видео')
+      const data = new FormData()
+      data.append('file', f)
+      data.append('target_language', document.getElementById('target_language').value)
+      data.append('translate', document.getElementById('translate').value)
+      data.append('voice_gender', document.getElementById('voice_gender').value)
+      const logo = document.getElementById('logo').files[0]
+      if(logo) data.append('logo', logo)
+      data.append('logo_position', document.getElementById('logo_position').value)
+
+      const resp = await fetch('/api/upload', {method:'POST', body: data})
+      const json = await resp.json()
+      if(resp.ok){
+        document.getElementById('result').innerText = `Задача создана: ${json.job_id}. Проверяйте статус через /api/job/${json.job_id}`
+      } else {
+        document.getElementById('result').innerText = `Ошибка: ${json.detail || JSON.stringify(json)}`
+      }
+    })
+  </script>
+</body>
+</html>
