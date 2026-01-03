@@ -25,7 +25,7 @@ jobs:
           docker run --rm -v "${{ github.workspace }}":/home/gradle/project -w /home/gradle/project gradle:8.4.1-jdk17 gradle wrapper
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v4
+        uses: android-actions/setup-android@v3
         with:
           api-level: 34
           ndk: false
